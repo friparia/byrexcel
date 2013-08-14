@@ -1,0 +1,168 @@
+label{
+	font-size:15px; 
+}
+
+.header{
+	margin-top:50px;
+	height:40px;
+}
+
+.legend{
+	border-bottom:1px solid #ddd;
+	margin-bottom:50px;
+	padding-bottom:10px;
+	text-align:left;
+	letter-spacing:2px;
+}
+
+.navbar div {
+	height:40px;6}
+
+.nav-side{
+	padding:10px 5px;
+}
+
+.nav-side .nav-header{
+	font-size:20px;
+	margin-bottom:10px;
+}
+
+.login-form .legend{
+	margin-bottom:40px;
+	font-size:21px;
+	text-align:left;
+}
+
+.login-form .btn{
+	width:100px;
+	margin-top:5px;
+	font-size:15px;
+	text-indent:13px;
+	letter-spacing:15px;
+}
+
+.accordion-toggle{ 
+	font-size:15px; 
+}
+
+.calendar{
+	margin:10px auto;
+}
+
+.cal-w{
+	font-weight:bold;
+	font-size:16px;
+	text-align:center; 
+}
+
+.cal-d{
+	height:30px;
+	width:30px;
+	text-align:center;
+	font-size:20px; 
+}
+
+.cal-d a{ 
+	text-decoration:none;
+	padding:10px;
+}
+
+.cal-w1{ 
+	font-weight:bold;
+	font-size:16px;
+	text-align:center;
+}
+
+.cal-d1{ 
+	height:80px;
+	width:80px;
+	text-align:center;
+	font-size:20px; 
+}
+
+.cal-d1 a{
+	text-decoration:none;
+}
+
+.cal-d1 p{ 
+	margin-top:6px; 
+}
+
+.user_detail{
+	margin:80px auto;
+	width:800px;
+	height:400px;
+}
+
+.user_detail .display-info{
+	width:350px;
+	padding-bottom:80px;
+}
+
+.display-info label{
+	float:left;
+	text-align:right;
+	width:70px;
+	height:30px;
+	margin-top:12px;
+}
+
+.display-info input{
+	float:right;
+	width:240px;
+	height:30px;
+}
+
+.display-info a, #changeModal .btn{
+	width:100px;
+	margin-left:10px;
+	margin-top:15px;
+	font-size:16px;
+	letter-spacing:2px;
+}
+
+.user_detail #changeModal .footer{
+	width:100%;
+	margin-top:35px;
+	text-align:center;
+}
+
+.user_detail #changeModal .modal-body{
+	margin-top:30px;
+}
+
+.user_detail #changeModal .controls input{
+	width:240px;
+	height:30px;
+}
+
+.user_detail #changeModal .control-label{
+	margin-top:8px;
+}
+
+.user_detail #changeModal .btn{
+	width:130px;
+}
+
+.setting_user .div_top{
+	margin-top:-15px;
+}
+
+.setting_order div{
+	padding:0 5px;
+}
+
+.setting_user_detail .btn{
+	width:160px;
+	margin-left:10px;
+	font-size:16px;
+	letter-spacing:2px;
+}
+
+#addNewPosModal .footer input, .add-new-user .footer input{
+	width:120px;
+	margin-top:25px;
+	letter-spacing:12px;
+	text-indent:10px;
+}
+
