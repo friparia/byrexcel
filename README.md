@@ -1,13 +1,12 @@
-
 # BYR Excel Plugin
 
 ## What is it
 It is a PHP and jQuery plugin for web developers to develope code whose purpose is to import excel `(WITHOUT ERRORS)` easier.
 
 ## Requirements
-PHP 5.5+
-jQuery 1.8.2
-PHPExcel
+* PHP 5.5+
+* jQuery 1.8.2
+* PHPExcel
 
 ## Demo
 
