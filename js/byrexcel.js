@@ -10,8 +10,7 @@ geturl = 'get.php';
 changeurl = 'change.php';
 editurl = 'edit.php';
 
-function render()
-{
+function render(){
 	$.get(geturl,{}, function(data){
 		//render head
 		var head = '';
@@ -98,8 +97,8 @@ function render()
 		});
 	},'json');
 }
-function refreshThWidth()
-{
+
+function refreshThWidth(){
 	var length = $('#excel th').size();
 	for(var i=0; i!=length; i++)
 	{
