@@ -8,9 +8,19 @@ abstract class PHPValidator{
     private $_errorTips;
 	public static $builtInValidators = array(
         'phone' => 'PhoneValidator',
+		'email'=>'EmailValidator',
+        'icard' => 'ICardValidator',
+		'required'=>'RequiredValidator',
+		'match'=>'RegularExpressionValidator',
+		'url'=>'UrlValidator',
+		'length'=>'StringValidator',
+		'in'=>'RangeValidator',
+		'numerical'=>'NumberValidator',
+		'boolean'=>'BooleanValidator',
+		// 'date'=>'CDateValidator',
+		// 'compare'=>'CompareValidator',
         );
     abstract protected function validateAttribute($values, $attribute);
-
 
     public function validate($values, $attributes=null){
         if(!is_array($values)){
@@ -24,7 +34,6 @@ abstract class PHPValidator{
                 $ret = $this->validateAttribute($values,$attribute);
                 if($ret !== true){ 
                     $this->_errorAttributes = $attribute;
-                    $this->_errorTips = $ret;
                 }
             }
         }
@@ -55,6 +64,10 @@ abstract class PHPValidator{
 
 		return $validator;
 	}
+
+    public function addErrorTips($errorTips){
+        $this->_errorTips = $errorTips;
+    }
 
     public function getErrorAttribute(){
         return $this->_errorAttributes;

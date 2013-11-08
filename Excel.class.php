@@ -12,7 +12,6 @@ require_once "./PHPValidator/Rules/InlineValidator.php";
  * Email friparia@gmail.com
  * TODO Add online mode to modify the current excel
  ***/
-
 class BYRExcel{
 
     /*** 
@@ -20,8 +19,6 @@ class BYRExcel{
      * what it is
      * Example :
      * array(
-         *    array('row' => 1, 'col' => 3, 'error' => 'data type wrong'),
-         *    array('row' => 2, 'col' => 1, 'error' => 'invalid phone'),
          * );
      ***/
     private $_error = array();
@@ -49,8 +46,6 @@ class BYRExcel{
     public static $excelType = array('xlsx', 'xls', 'csv');
 
     const EXCEL_TMP_DIR = "./temp/";
-
-        
 
     /***
      * Read the exact sheet of an excel file
@@ -221,7 +216,6 @@ class BYRExcel{
     private function getColIndex($attribute){
         return array_search($attribute,$this->_header);
     }
-
 
 }
 

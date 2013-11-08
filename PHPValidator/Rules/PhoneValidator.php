@@ -5,7 +5,9 @@ class PhoneValidator extends PHPValidator{
         $pattern="/^((\(\d{2,3}\))|(\d{3}\-))?13\d{9}$/";
         if(preg_match($pattern, $value))
             return true;
-        else
-            return "INVALID PHONE";
+        else{
+            $this->addErrorTips("INVALID PHONE");
+            return false;
+        }
     }
 }
