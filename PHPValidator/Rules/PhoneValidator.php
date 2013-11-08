@@ -2,8 +2,8 @@
 class PhoneValidator extends PHPValidator{
     protected function validateAttribute($values,$attribute){
         $value = $values[$attribute];
-        $pattern="/^((\(\d{2,3}\))|(\d{3}\-))?13\d{9}$/";
-        if(preg_match($pattern, $value))
+        $pattern="/^1[3|4|5|8]\d{9}$/";
+        if(preg_match($pattern, (string)$value))
             return true;
         else{
             $this->addErrorTips("INVALID PHONE");

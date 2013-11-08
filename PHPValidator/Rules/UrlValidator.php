@@ -1,6 +1,7 @@
 <?php
 class UrlValidator extends PHPValidator{
 	public $pattern='/^{schemes}:\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)/i';
+	public $defaultScheme;
 	public $validSchemes=array('http','https');
 	protected function validateAttribute($values,$attribute)
 	{

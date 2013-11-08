@@ -5,13 +5,16 @@ class Rule{
     private $_params;
 
     public function __construct($rule){
+        if($rule instanceof stdclass){
+            $rule = get_object_vars($rule);
+        }
         $this->_attributes = preg_split('/[\s,]+/',$rule[0],-1,PREG_SPLIT_NO_EMPTY);
         $this->_name = $rule[1];
         $this->_params = array_slice($rule, 2);
     }
 
     public function getRule(){
-        return array(implode(',',$this->_attributes), $this->_name); //yii like
+        return array(implode(',',$this->_attributes), $this->_name, $this->_params); //yii like
     }
 
     public function removeAttribute($attribute){
@@ -31,6 +34,6 @@ class Rule{
     }
 
     public function getParams(){
-        return $this->_params;
+        return $this->_params[0];
     }
 }

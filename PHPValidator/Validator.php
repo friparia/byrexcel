@@ -15,7 +15,7 @@ abstract class PHPValidator{
 		'url'=>'UrlValidator',
 		'length'=>'StringValidator',
 		'in'=>'RangeValidator',
-		'numerical'=>'NumberValidator',
+		'numberical'=>'NumberValidator',
 		'boolean'=>'BooleanValidator',
 		// 'date'=>'CDateValidator',
 		// 'compare'=>'CompareValidator',
@@ -58,8 +58,9 @@ abstract class PHPValidator{
 			if(isset(self::$builtInValidators[$name]))
 				$className=self::$builtInValidators[$name];
 			$validator=new $className;
-			foreach($params as $name=>$value)
+			foreach($params as $name=>$value){
 				$validator->$name=$value;
+            }
 		}
 
 		return $validator;

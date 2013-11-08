@@ -4,7 +4,8 @@ class ICardValidator extends PHPValidator{
     public $birthCode;
     public $idCode;
     public $verifyCode;
-    public $weight = array(7,9,10,5,8,4,2,1,6,3,7,9,10,5,8,4,2,1);
+    public $weight = array(7,9,10,5,8,4,2,1,6,3,7,9,10,5,8,4,2);
+    public $codeTable = array(1,0,10,9,8,7,6,5,4,3,2);
     protected function validateAttribute($values, $attribute){
         $value = $values[$attribute];
         if(strlen($value) == 15){
@@ -36,12 +37,12 @@ class ICardValidator extends PHPValidator{
     }
 
     public function verifyICard(){
-        $unverfiedStr = $this->areaCode.$this->birthCode.$this->idCode();
+        $unverfiedStr = str_split($this->areaCode.$this->birthCode.$this->idCode);
         $sum = 0;
         foreach($unverfiedStr as $k=>$v){
-            $sum += (int)$v*$weight[$k];
+            $sum += (int)$v*$this->weight[$k];
         }
-        if(($sum % 11) == (int)$verifyCode){
+        if($this->codeTable[$sum % 11] == (int)$this->verifyCode){
             return true;
         }
         else{

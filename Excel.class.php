@@ -2,9 +2,18 @@
 require_once "./PHPExcel/Classes/PHPExcel.php";
 require_once "./PHPValidator/Validator.php";
 require_once "./PHPValidator/Rule.php";
-require_once "./PHPValidator/Rules/PhoneValidator.php";
+require_once "./PHPValidator/Rules/BooleanValidator.php";
+require_once "./PHPValidator/Rules/EmailValidator.php";
+require_once "./PHPValidator/Rules/ICardValidator.php";
 require_once "./PHPValidator/Rules/InlineValidator.php";
-/***
+require_once "./PHPValidator/Rules/NumberValidator.php";
+require_once "./PHPValidator/Rules/PhoneValidator.php";
+require_once "./PHPValidator/Rules/RangeValidator.php";
+require_once "./PHPValidator/Rules/RegularExpressionValidator.php";
+require_once "./PHPValidator/Rules/RequiredValidator.php";
+require_once "./PHPValidator/Rules/StringValidator.php";
+require_once "./PHPValidator/Rules/UrlValidator.php";
+/***name
  * BYR EXCEL 
  * EXCEL 导入导出
  * Version 0.2
@@ -219,8 +228,9 @@ class BYRExcel{
 
 }
 
-function checkName($name)
+function checkName($values, $attribute)
 {
+    $name = $values[$attribute];
     if($name == 'bob'){
         return true;
     }

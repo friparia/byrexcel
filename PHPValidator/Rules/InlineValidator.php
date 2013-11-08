@@ -4,7 +4,7 @@ class InlineValidator extends PHPValidator{
     public $params;
 	protected function validateAttribute($values,$attribute)
 	{
-        if(($ret = call_user_func($this->function, $values[$attribute])) === true){
+        if(($ret = call_user_func($this->function, $values, $attribute)) === true){
             return true;
         }
         else{
