@@ -87,7 +87,7 @@ function YourOwnFunction($values, $attribute)
     }
     else
     {
-        return "String that describe why"；
+        return "String that describe why";
     }
 }
 ```
