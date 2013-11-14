@@ -71,9 +71,29 @@ die($ret);
 ```
 The return value is just like what it is in the first
 
+## Customize functions
+You can customize your own validation function and use it in the rules like
+```php
+array('ColToValidate','YourValidationFunction')
+```
+And your function need to be like this
+```php
+function YourOwnFunction($values, $attribute)
+{
+    //something to be done
+    if($validationTrue)
+    {
+        return true;
+    }
+    else
+    {
+        return "String that describe why"；
+    }
+}
+```
+
 ## To Do 
 * add style on the plugin, now it is ugly
-* reunion jquery code which is ugly now
+* rebuild jquery code which is ugly now 
 * add export function with less memory usage
 * add more rule support like xml or yaml etc
-* set more useful validations
