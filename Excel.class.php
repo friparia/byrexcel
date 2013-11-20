@@ -1,18 +1,4 @@
 <?php
-require_once "./PHPExcel/Classes/PHPExcel.php";
-require_once "./PHPValidator/Validator.php";
-require_once "./PHPValidator/Rule.php";
-require_once "./PHPValidator/Rules/BooleanValidator.php";
-require_once "./PHPValidator/Rules/EmailValidator.php";
-require_once "./PHPValidator/Rules/ICardValidator.php";
-require_once "./PHPValidator/Rules/InlineValidator.php";
-require_once "./PHPValidator/Rules/NumberValidator.php";
-require_once "./PHPValidator/Rules/PhoneValidator.php";
-require_once "./PHPValidator/Rules/RangeValidator.php";
-require_once "./PHPValidator/Rules/RegularExpressionValidator.php";
-require_once "./PHPValidator/Rules/RequiredValidator.php";
-require_once "./PHPValidator/Rules/StringValidator.php";
-require_once "./PHPValidator/Rules/UrlValidator.php";
 /***name
  * BYR EXCEL 
  * EXCEL 导入导出
@@ -47,6 +33,8 @@ class BYRExcel{
     private $_rule;
 
     private $_id;
+
+    private $_loaded = false;
     /**
      * error status whether with head
      ***/
@@ -62,6 +50,13 @@ class BYRExcel{
      * TODO Update the speed of the reading excel 
      ***/
     public function __construct($file, $sheetid=0){
+        if(!$this->_loaded){
+            include "./PHPExcel/Classes/PHPExcel.php";
+            include "./PHPValidator/Validator.php";
+            include "./PHPValidator/Rule.php";
+            $this->_loaded = true;
+        }
+        
         if(file_exists($file)){
             $path_parts = pathinfo($file);
         }
@@ -119,9 +114,9 @@ class BYRExcel{
                     $attribute = $validator->getErrorAttribute();
                     $rowIndex = $this->getRowIndex(array_values($row));
                     if($this->withHeader)
-                        $rowNum = $rowIndex+1;
+                    $rowNum = $rowIndex+1;
                     else
-                        $rowNum = $rowIndex;
+                    $rowNum = $rowIndex;
                     $colIndex = $this->getColIndex($attribute);
                     $this->_error[] = array('type'=>'element', 'row' => $rowNum, 'col' => $colIndex, 'value' => $this->_content[$rowIndex][$colIndex], 'tips' => $validator->getTips());
                 }

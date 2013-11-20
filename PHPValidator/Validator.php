@@ -47,7 +47,8 @@ abstract class PHPValidator{
 	public static function createValidator($name,$attributes,$params=array())
 	{
 		if(is_callable($name))
-		{
+        {
+            include_once './PHPValidator/Rules/InlineValidator.php';
 			$validator=new InlineValidator;
 			$validator->attributes=$attributes;
 			$validator->function=$name;
@@ -55,8 +56,10 @@ abstract class PHPValidator{
 		else
 		{
 			$params['attributes']=$attributes;
-			if(isset(self::$builtInValidators[$name]))
+			if(isset(self::$builtInValidators[$name])){
+                include_once './PHPValidator/Rules/'.self::$builtInValidators[$name].'.php';
 				$className=self::$builtInValidators[$name];
+            }
 			$validator=new $className;
 			foreach($params as $name=>$value){
 				$validator->$name=$value;
