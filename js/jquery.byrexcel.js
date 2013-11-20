@@ -1,179 +1,145 @@
-(function ($){
-  var defaults = {
-    url:'./demo.php',
-    submiturl:'./submit.php',
-    maxrows : 100
-  };
+(function ($) {
+    'use strict';
 
-  $.fn.byrexcel = function (options){
-    var options = $.extend(defaults, options);
-    var byrexcel = $(this);
-    var modified_content = {};
-    return this.each(function (){
-      byrexcel.addClass("byrexcel");
-      $.getJSON(options.url, function(retdata){
-        modified_content.ID = retdata.ID;
-        var table_start = "<table class=\"byrexcel-table\">";
-        var table_head = "<tr class=\"byrexcel-tr\">";
-        for(i in retdata.HEADER){
-          table_head += "<th class=\"byrexcel-th\">" + retdata.HEADER[i] +  "</th>";
+    var defaults = {
+        getUrl : './demo.php',
+        submitUrl : './submit.php',
+        maxrows : 100,
+        templates : {
+            ul : '<ul class="byrexcel-errorlist">' + 
+                '</ul>',
+            li : '<li class="byrexcel-error" error-row="{row}" error-col="{col}">' + '{value}' + 
+                '</li>',
+            table : '<table class="byrexcel-table">' + 
+                '</table>',
+            td : '<td class="byrexcel-td" data-row="{row}" data-column="{column}">' + '{value}' + 
+                '</td>',
+            th : '<th class="byrexcel-th">' + '{value}' + 
+                '</th>',
+            input :  '<div id="byrexcel-inputdiv" style="display:none;"><input id="byrexcel-input" type="text" style="position:fixed;"/></div>',
+            button : '<button id="byrexcel-submit">提交</button>'
+        },
+        errorMessages : {
+            commonError : "{error}",
+            elementError : "ROW {row} COL {col} ERROR {value} TIPS : {tip}"
         }
-        table_head += "</tr>";
+    };
 
-        var table_content = "";
+    $.fn.byrexcel = function (options) {
+        var root = this;
+        this.options = $.extend(defaults, options);
+        this.request = {items : Array(), id:''};
 
-        for(i in retdata.CONTENT){
-          if(i > options.maxrows){
-            break;
-          }
-          table_content += "<tr>";
-            for(j in retdata.CONTENT[i]){
-              table_content += "<td class=\"byrexcel-td\" data-row=\""+i+"\" data-column=\""+(parseInt(j)+1)+"\">" + retdata.CONTENT[i][j] + "</td>";
+        this.init = function (data) {
+            console.log(this.html(''));
+            this.content = data.content;
+            this.header = data.header;
+            this.request.id = data.id;
+            this.error = data.error;
+            this.render();
+            this.bindEvents();
+        };
+
+        this.render = function () {
+            this.append(this.options.templates.ul);
+            this.append(this.options.templates.table);
+            this.renderTable(this.children("table"));
+            this.renderError(this.children("ul"));
+            this.append(this.options.templates.button);
+            this.append(this.options.templates.input);
+        };
+
+        this.renderError = function (errorlist) {
+            var i;
+            for (i in this.error) {
+                if (this.error.hasOwnProperty(i)) {
+                    if (this.error[i].type == "column" || this.error[i].type == "special") {
+                        errorlist.append(this.options.templates.li.replace('{value}', this.options.errorMessages.commonError).replace('{error}', this.error[i].value));
+                    }
+                    else if(this.error[i].type == 'element') {
+                        errorlist.append(this.options.templates.li.replace('{value}', this.options.errorMessages.elementError).replace('{row}', this.error[i].row).replace('{col}', parseInt(this.error[i].col) + 1).replace('{value}', this.error[i].value).replace('{tip}', this.error[i].tips).replace('{row}', this.error[i].row).replace('{col}', parseInt(this.error[i].col) + 1));
+                        this.find('td[data-row=' + this.error[i].row + '][data-column=' + (parseInt(this.error[i].col) + 1) + ']').addClass('byrexcel-error');
+                    }
+                }
             }
-          table_content += "</tr>";
-        }
+        };
 
-        var table_end = "</table>";
-        var table = table_start + table_head + table_content + table_end;
+        this.renderTable = function (table) {
+            var i;
+            var j;
+            var td;
+            var table_content;
 
-        byrexcel.append(table);
-        var error_start = "<ul class=\"byrexcel-errorlist\">";
-        var error_content = "";
-        for(i in retdata.ERROR){
-          if(retdata.ERROR[i].type == 'column'){
-            error_content += "<li class=\"byrexcel-error\">"+retdata.ERROR[i].value + "</li>";
-          }
-          else if(retdata.ERROR[i].type == 'element'){
-            error_content += "<li class=\"byrexcel-error\" error-row=\""+ retdata.ERROR[i].row +"\" error-col=\"" + (parseInt(retdata.ERROR[i].col) + 1) + "\">ROW " + retdata.ERROR[i].row + " COL "+ (parseInt(retdata.ERROR[i].col) + 1) + " ERROR: " + retdata.ERROR[i].value + " TIPS:" + retdata.ERROR[i].tips + "</li>";
-            byrexcel.find('td[data-row=' + retdata.ERROR[i].row + '][data-column=' + (parseInt(retdata.ERROR[i].col) + 1) + ']').addClass('byrexcel-error');
-          }
-          else if(retdata.ERROR[i].type == 'special'){
-            error_content += "<li class=\"byrexcel-error\">" + retdata.ERROR[i].value + "</li>";
-          }
-          
-        }
-        var error_end = "</ul>";
-        var error = error_start + error_content + error_end;
-        byrexcel.prepend(error);
-
-        var error_row, error_col;
-        $('.byrexcel-error').click(function() {
-          error_row = $(this).attr('error-row');
-          error_col = $(this).attr('error-col');
-          byrexcel.find('td[data-row=' + error_row + '][data-column=' + error_col + ']').animate({backgroundColor:'red'}, 400).animate({backgroundColor:'white'}, 400).animate({backgroundColor:'red'}, 400).animate({backgroundColor:'white'}, 400);
-        });
-
-        var inputdiv = "<div id=\"byrexcel-inputdiv\" style=\"display:none;\"><input id=\"byrexcel-input\" type=\"text\" style=\"position:fixed;\"/></div>";
-        var submitbtn = "<button id=\"byrexcel-submit\">提交</button>";
-        var modified_items = new Array();
-        byrexcel.append(inputdiv).append(submitbtn);
-        var byrexcel_tdobj;
-        var td_offset, td_height, td_width, td_content, td_col, td_row;
-        $('.byrexcel-td').click(function(){
-          byrexcel_tdobj = $(this);
-          if( !(byrexcel_tdobj).hasClass('byrexcel-error') ) return;
-          td_offset = $(this).offset();
-          td_height = $(this).height();
-          td_width = $(this).width();
-          td_content = $(this).html();
-          td_col = parseInt($(this).attr('data-column')) - 1;
-          td_row = parseInt($(this).attr('data-row'));
-          $('#byrexcel-inputdiv').show();
-          $('#byrexcel-input').css({width: td_width, height: td_height, left: td_offset.left, top: td_offset.top}).val(td_content).trigger('focus').focusout(function(){
-            var input_val = $('#byrexcel-input').val();
-            byrexcel_tdobj.html(input_val);
-            var exists = false;
-            for( i in modified_items ){
-              if(modified_items[i].row == td_row && modified_items[i].col == td_col){
-                modified_items[i].value = input_val;
-                exists = true;
-              }      
+            table_content += '<tr class="byrexcel-tr">';
+            for (i in this.header) {
+                if (this.header.hasOwnProperty(i)) {
+                    table_content += this.options.templates.th.replace('{value}', this.header[i]);
+                }
             }
-            if(!exists){
-              modified_items.push({row:td_row, col:td_col, value:input_val});
-            }
-            $('#byrexcel-inputdiv').hide();
-          });
-        });
-        $('#byrexcel-submit').click(function() {
-          modified_content.items = modified_items;
-          modified_items = [];
-          $.post(options.submiturl, {excel_data : modified_content}, function(retdata){
-            table_head = "<tr class=\"byrexcel-tr\">";
-            for(i in retdata.HEADER){
-              table_head += "<th class=\"byrexcel-th\">" + retdata.HEADER[i] +  "</th>";
-            }
-            table_head += "</tr>";
+            table_content += '</tr>';
 
-            table_content = "";
-
-            for(i in retdata.CONTENT){
-              if(i > options.maxrows){
-                break;
-              }
-              table_content += "<tr>";
-              for(j in retdata.CONTENT[i]){
-                table_content += "<td class=\"byrexcel-td\" data-row=\""+i+"\" data-column=\""+(parseInt(j)+1)+"\">" + retdata.CONTENT[i][j] + "</td>";
-              }
-              table_content += "</tr>";
+            for (i in this.content) {
+                if (this.content.hasOwnProperty(i)) {
+                    if (i > this.options.maxrows) {
+                        break;
+                    }
+                    table_content += '<tr>';
+                    for (j in this.content[i]) {
+                        if (this.content[i].hasOwnProperty(j)) {
+                            td = this.options.templates.td.replace('{row}', i).replace('{column}', parseInt(j) + 1).replace('{value}', this.content[i][j]);
+                            table_content += td;
+                        }
+                    }
+                    table_content += '</tr>';
+                }
             }
-            $('.byrexcel-table').html(table_head+table_content);
 
-            error_content = "";
-            for(i in retdata.ERROR){
-              if(retdata.ERROR[i].type == 'column'){
-                error_content += "<li class=\"byrexcel-error\">"+retdata.ERROR[i].value + "</li>";
-              }
-              else if(retdata.ERROR[i].type == 'element'){
-                error_content += "<li class=\"byrexcel-error\" error-row=\""+ retdata.ERROR[i].row +"\" error-col=\"" + (parseInt(retdata.ERROR[i].col) + 1) + "\">ROW " + retdata.ERROR[i].row + " COL "+ (parseInt(retdata.ERROR[i].col) + 1) + " ERROR: " + retdata.ERROR[i].value + " TIPS:" + retdata.ERROR[i].tips + "</li>";
-                byrexcel.find('td[data-row=' + retdata.ERROR[i].row + '][data-column=' + (parseInt(retdata.ERROR[i].col) + 1) + ']').addClass('byrexcel-error');
-              }
-              else if(retdata.ERROR[i].type == 'special'){
-                error_content += "<li class=\"byrexcel-error\">" + retdata.ERROR[i].value + "</li>";
-              }
-            }
-            $('.byrexcel-errorlist').html(error_content);
+            table.append(table_content);
+        };
 
-            error_row, error_col;
-            $('.byrexcel-error').click(function() {
-              error_row = $(this).attr('error-row');
-              error_col = $(this).attr('error-col');
-              byrexcel.find('td[data-row=' + error_row + '][data-column=' + error_col + ']').animate({backgroundColor:'red'}, 400).animate({backgroundColor:'white'}, 400).animate({backgroundColor:'red'}, 400).animate({backgroundColor:'white'}, 400);
+
+        this.bindEvents = function () {
+            this.children('ul').children('li').click(function () {
+                root.find('td[data-row=' + $(this).attr("error-row") + '][data-column=' + $(this).attr("error-col") + ']').animate({backgroundColor:'red'}, 400).animate({backgroundColor:'white'}, 400).animate({backgroundColor:'red'}, 400).animate({backgroundColor:'white'}, 400);
             });
 
-
-            $('.byrexcel-td').click(function(){
-              byrexcel_tdobj = $(this);
-              if( !(byrexcel_tdobj).hasClass('byrexcel-error') ) return;
-              td_offset = $(this).offset();
-              td_height = $(this).height();
-              td_width = $(this).width();
-              td_content = $(this).html();
-              td_col = parseInt($(this).attr('data-column')) - 1;
-              td_row = parseInt($(this).attr('data-row'));
-              $('#byrexcel-inputdiv').show();
-              $('#byrexcel-input').css({width: td_width, height: td_height, left: td_offset.left, top: td_offset.top}).val(td_content).trigger('focus').focusout(function(){
-                input_val = $('#byrexcel-input').val();
-                byrexcel_tdobj.html(input_val);
-                exists = false;
-                for( i in modified_items ){
-                  if(modified_items[i].row == td_row && modified_items[i].col == td_col){
-                    modified_items[i].value = input_val;
-                    exists = true;
-                  }      
+            this.children('table').find('.byrexcel-td').click(function (){
+                var inputdiv = root.find('#byrexcel-inputdiv');
+                var td = $(this);
+                if (!$(this).hasClass('byrexcel-error')) {
+                    return ;
                 }
-                if(!exists){
-                  modified_items.push({row:td_row, col:td_col, value:input_val});
-                }
-                $('#byrexcel-inputdiv').hide();
-                
-              });
+                inputdiv.show().children().css({width: $(this).width(), height: $(this).height(), left: $(this).offset().left, top: $(this).offset().top}).val($(this).html()).trigger('focus').focusout(function(){
+                    var exists = false;
+                    var i;
+                    td.html($(this).val());
+                    for (i in root.request.items) {
+                        if(root.request.items.hasOwnProperty(i)) {
+                            if(root.request.items[i].row == td.attr('data-row') && root.request.items[i].col == td.attr('data-column')-1){
+                                root.request.items[i].value = $(this).val();
+                                exists = true;
+                            }      
+                        }
+                    }
+                    if(!exists){
+                        root.request.items.push({row:td.attr('data-row'), col:td.attr('data-column')-1, value:$(this).val()});
+                    }
+                    $(this).unbind('focusout');
+                    inputdiv.hide();
+                });
             });
-            if(retdata == true)
-              alert("success");
-          }, 'json');
+            this.children('button').click(function() {
+                $.post(root.options.submitUrl, {excel_data : root.request}, function(retdata){
+                    root.init(retdata);
+                },'json');
+            });
+        }
+
+        return this.each(function () {
+            root.addClass('byrexcel');
+            $.getJSON(root.options.getUrl, function (retdata) {
+                root.init(retdata);
+            });
         });
-      });
-    });
-  }
-})(jQuery);
+    };
+}(jQuery));

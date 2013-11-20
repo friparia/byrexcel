@@ -1,7 +1,7 @@
 <?php
 require_once "./Excel.class.php";
 $data = $_POST['excel_data'];
-$id = $data['ID'];
+$id = $data['id'];
 $excel2 = new BYRExcel($id);
 $result = $excel2->modify($data['items']);
 if(!$result){

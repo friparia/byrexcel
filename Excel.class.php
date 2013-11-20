@@ -1,54 +1,18 @@
 <?php
-/***name
- * BYR EXCEL 
- * EXCEL 导入导出
- * Version 0.2
- * Auther frip
- * Email friparia@gmail.com
- * TODO Add online mode to modify the current excel
- ***/
 class BYRExcel{
 
-    /*** 
-     * _errors shows where the excel error is and
-     * what it is
-     * Example :
-     * array(
-         * );
-     ***/
     private $_error = array();
-
-    /***
-     * the array stores the whole data
-     * in the excel
-     * row priori
-     ***/
     private $_content = array();
-
-    /***
-     * the header of the excel
-     ***/
     private $_header = array();
-
     private $_rule;
-
     private $_id;
-
     private $_loaded = false;
-    /**
-     * error status whether with head
-     ***/
     public $withHeader = false;
 
     public static $excelType = array('xlsx', 'xls', 'csv');
 
     const EXCEL_TMP_DIR = "./temp/";
 
-    /***
-     * Read the exact sheet of an excel file
-     * Convert it into an array
-     * TODO Update the speed of the reading excel 
-     ***/
     public function __construct($file, $sheetid=0){
         if(!$this->_loaded){
             include "./PHPExcel/Classes/PHPExcel.php";
@@ -87,18 +51,13 @@ class BYRExcel{
         else{
             $jsonData = file_get_contents(self::EXCEL_TMP_DIR.$file);
             $data = (array)json_decode($jsonData);
-            $this->_content = get_object_vars($data['CONTENT']);
-            $this->_header = $data['HEADER'];
-            $this->_rule = $data['RULES'];
+            $this->_content = get_object_vars($data['content']);
+            $this->_header = $data['header'];
+            $this->_rule = $data['rules'];
             $this->_id = $file;
         }
     }
 
-    /***
-     *  use  yii like rule array
-     *  and validate the rule with data
-     *  TODO Make rule more general (create a class like RuleParser or Rule and pass it to Validator)
-     ***/
     public function validate($rules){
         if(!$this->validateHeader()){
             return false;
@@ -129,10 +88,10 @@ class BYRExcel{
         {
             $this->_id = md5(time());//TODO need to be more yooo
             $data = array();
-            $data['CONTENT'] = $this->_content;
-            $data['HEADER'] = $this->_header;
-            $data['RULES'] = $rules;
-            $data['ID'] = $this->_id;
+            $data['content'] = $this->_content;
+            $data['header'] = $this->_header;
+            $data['rules'] = $rules;
+            $data['id'] = $this->_id;
             $data = json_encode($data);
             $filename = $this->_id;
             if(!file_exists(self::EXCEL_TMP_DIR.$filename)){
@@ -152,6 +111,7 @@ class BYRExcel{
         }
         return true;
     }
+
     public function validateColumn($rules){
         $retrules = array();
         foreach($rules as $rule){
@@ -168,40 +128,31 @@ class BYRExcel{
         return $retrules;
     }
 
-    /***
-     * read the js return to modify the content
-     ***/
     public function modify($items){
         foreach($items as $i){
             $this->_content[$i['row']][$i['col']] = $i['value'];
         }
         $this->_error = array();
         $data = array();
-        $data['CONTENT'] = $this->_content;
-        $data['HEADER'] = $this->_header;
-        $data['RULES'] = $this->_rule;
-        $data['ID'] = $this->_id;
+        $data['content'] = $this->_content;
+        $data['header'] = $this->_header;
+        $data['rules'] = $this->_rule;
+        $data['id'] = $this->_id;
         $data = json_encode($data);
         $filename = $this->_id;
         file_put_contents(self::EXCEL_TMP_DIR.$filename, $data);
         return $this->validate($this->_rule);
     }
 
-    /***
-     * return a json data for client use
-     ***/
     public function getJSONData(){
         $data = array();
-        $data['CONTENT'] = $this->_content;
-        $data['HEADER'] = $this->_header;
-        $data['ERROR'] = $this->_error;
-        $data['ID'] = $this->_id;
+        $data['content'] = $this->_content;
+        $data['header'] = $this->_header;
+        $data['error'] = $this->_error;
+        $data['id'] = $this->_id;
         return json_encode($data);
     }
 
-    /***
-     * return the errors for backend use
-     ***/
     public function getError(){
         return $this->_error;
     }
